@@ -722,7 +722,7 @@
         <header>
             <div class="logo-area">
                 <img src="/logo.png" alt="Sal0 Legendas" class="logo-img">
-                <h1>Sal0 Legendas <span class="badge-version">v1.0.8</span></h1>
+                <h1>Sal0 Legendas <span class="badge-version">v1.0.10</span></h1>
             </div>
             <div class="header-actions">
                 <button type="button" class="header-btn" onclick="toggleTheme()" id="themeToggleBtn">🌙 Tema</button>
@@ -1047,7 +1047,7 @@
         </div>
 
         <!-- RODAPÉ -->
-        <footer>Sal0 Legendas v1.0.8 — Sistema de Legendagem e Tradução Automática com IA</footer>
+        <footer>Sal0 Legendas v1.0.10 — Sistema de Legendagem e Tradução Automática com IA</footer>
 
     </div>
 
@@ -1336,11 +1336,31 @@
         };
 
         // ==================== DOWNLOADS ====================
-        document.getElementById('btnDownloadVideo').onclick = () => window.location.href = '/api/download';
+        function getTokenQuery() {
+            const token = localStorage.getItem('auth_token') || '';
+            return token ? `?token=${encodeURIComponent(token)}` : '';
+        }
+
+        document.getElementById('btnDownloadVideo').onclick = () => {
+            window.location.href = '/api/download' + getTokenQuery();
+        };
 
         function downloadSubtitle(fmt) {
-            const filename = (document.getElementById('processStepText').innerText || "legenda").replace(/[^a-zA-Z0-9_-]/g, "_") + "." + fmt;
-            window.location.href = `/api/subtitles/download/${fmt}/${filename}`;
+            // Buscar da biblioteca de legendas
+            authFetch('/api/library').then(res => res.json()).then(data => {
+                const subs = data.subtitles || [];
+                const match = subs.find(s => s.filename.toLowerCase().endsWith('.' + fmt));
+                if (match) {
+                    window.location.href = `/api/subtitles/download/${fmt}/${encodeURIComponent(match.filename)}` + getTokenQuery();
+                } else {
+                    // fallback: usar nome genérico
+                    const filename = 'legenda.' + fmt;
+                    window.location.href = `/api/subtitles/download/${fmt}/${filename}` + getTokenQuery();
+                }
+            }).catch(() => {
+                const filename = 'legenda.' + fmt;
+                window.location.href = `/api/subtitles/download/${fmt}/${filename}` + getTokenQuery();
+            });
         }
 
         // ==================== LIBRARY ====================
@@ -1442,9 +1462,35 @@
         }
 
         // ==================== INIT ====================
+        async function restoreState() {
+            try {
+                const res = await fetch('/api/status');
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                if (data.status === 'processing') {
+                    // Processamento em andamento - mostrar progresso e iniciar polling
+                    document.getElementById('processCard').style.display = 'block';
+                    document.getElementById('btnSubmitProcess').disabled = true;
+                    document.getElementById('processStepText').innerText = data.step || 'Processando...';
+                    document.getElementById('processPercentText').innerText = (data.progress || 0) + '%';
+                    document.getElementById('progressBarFill').style.width = (data.progress || 0) + '%';
+                    updateTimeline(data.progress || 0, data.step || '');
+                    startPolling();
+                } else if (data.status === 'done') {
+                    // Processamento concluído - mostrar botões de download
+                    document.getElementById('downloadBox').style.display = 'block';
+                } else if (data.status === 'waiting_for_user_correction') {
+                    // Esperando revisão - carregar painel de correção
+                    loadCorrectionPanel();
+                }
+            } catch(e) { console.log('Estado não restaurado:', e); }
+        }
+
         window.onload = () => {
             loadLibrary();
             loadSettings();
+            restoreState();
         };
     </script>
 </body>

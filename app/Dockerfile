@@ -17,6 +17,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pré-instalar o modelo Whisper Large v3 Turbo dentro da imagem Docker
+COPY download_models.py .
+RUN python download_models.py && rm download_models.py
+
 # Copiar todo o código do aplicativo
 COPY . .
 

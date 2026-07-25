@@ -6,18 +6,21 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("download_models")
 
 def download_default_models():
-    """Baixa o modelo padrão Whisper (large-v3-turbo) no diretório persistente."""
-    target_dir = "/data/output/models/whisper"
-    os.makedirs(target_dir, exist_ok=True)
-    
-    models = ["deepdml/faster-whisper-large-v3-turbo"]
-    for m in models:
-        logger.info(f"Pré-baixando modelo de IA: {m} para {target_dir}")
+    """Baixa o modelo padrão Whisper Large v3 Turbo pré-instalado dentro da imagem Docker."""
+    target_dirs = [
+        "/root/.cache/huggingface/hub",
+        "/data/output/models/whisper"
+    ]
+    model_id = "deepdml/faster-whisper-large-v3-turbo"
+
+    for target_dir in target_dirs:
+        os.makedirs(target_dir, exist_ok=True)
+        logger.info(f"Pré-instalando modelo Whisper Large v3 Turbo em: {target_dir}")
         try:
-            WhisperModel(m, device="cpu", compute_type="int8", download_root=target_dir)
-            logger.info(f"Modelo {m} baixado com sucesso.")
+            WhisperModel(model_id, device="cpu", compute_type="int8", download_root=target_dir)
+            logger.info(f"Modelo {model_id} instalado com sucesso em {target_dir}.")
         except Exception as e:
-            logger.error(f"Erro ao pré-baixar modelo {m}: {e}")
+            logger.error(f"Aviso ao baixar modelo {model_id} em {target_dir}: {e}")
 
 if __name__ == "__main__":
     download_default_models()

@@ -43,14 +43,8 @@ def translate_text(text: str, target_lang: str = "pt-BR", source_lang: str = "au
         translated = translator.translate(text)
         return translated.strip() if translated else text
     except Exception as e:
-        logger.warning(f"Aviso na tradução via deep-translator ({e}). Tentando fallback local...")
-        try:
-            import argostranslate.translate
-            translated = argostranslate.translate.translate(text, source_code, target_code)
-            return translated.strip() if translated else text
-        except Exception:
-            logger.error(f"Erro completo ao traduzir trecho: '{text[:30]}...' -> Mantendo texto original.")
-            return text
+        logger.error(f"Aviso ao traduzir trecho '{text[:30]}...': {e}. Mantendo texto original.")
+        return text
 
 def translate_segments(
     segments: list[dict], 

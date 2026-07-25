@@ -100,38 +100,63 @@ def transcribe_audio(
         f"Threads={cpu_threads}, Compute={compute_type}, BeamSize={beam_size}, SileroVAD={enable_vad}"
     )
 
-    repo_id = resolve_whisper_repo(model_size)
-    local_dir = get_model_local_dir(model_size)
-    
-    if local_dir:
-        logger.info(f"Carregando modelo Whisper LOCALMENTE de: {local_dir}")
-        model_location = local_dir
-    else:
-        logger.info(f"Modelo local não encontrado para {model_size}. Baixando de {repo_id}...")
-        model_location = repo_id
-
     whisper_download_dir = "/data/output/models/whisper"
     os.makedirs(whisper_download_dir, exist_ok=True)
 
-    try:
-        model = WhisperModel(
-            model_size_or_path=model_location,
-            device="cpu",
-            compute_type=compute_type,
-            cpu_threads=cpu_threads,
-            download_root=whisper_download_dir,
-            local_files_only=bool(local_dir)
-        )
-    except Exception as e:
-        logger.warning(f"Falha ao carregar modelo localmente ({e}). Tentando conectar online para obter modelo...")
-        model = WhisperModel(
-            model_size_or_path=repo_id,
-            device="cpu",
-            compute_type=compute_type,
-            cpu_threads=cpu_threads,
-            download_root=whisper_download_dir,
-            local_files_only=False
-        )
+    model = None
+
+    # Etapa 1: Tentar carregar pelo caminho direto da pasta local contendo os pesos
+    local_dir = get_model_local_dir(model_size)
+    if local_dir:
+        try:
+            logger.info(f"Carregando modelo Whisper '{model_size}' do diretório local: {local_dir}")
+            model = WhisperModel(
+                local_dir,
+                device="cpu",
+                compute_type=compute_type,
+                cpu_threads=cpu_threads
+            )
+        except Exception as e_local:
+            logger.warning(f"Falha ao carregar diretamente do diretório {local_dir}: {e_local}")
+            model = None
+
+    # Etapa 2: Se não carregou do diretório local direto, tentar pelo repositório estrito local
+    if model is None:
+        try:
+            logger.info(f"Tentando carregar '{repo_id}' via HuggingFace local...")
+            model = WhisperModel(
+                repo_id,
+                device="cpu",
+                compute_type=compute_type,
+                cpu_threads=cpu_threads,
+                download_root=whisper_download_dir,
+                local_files_only=True
+            )
+        except Exception as ex_local_repo:
+            logger.warning(f"O modelo '{repo_id}' não está completamente snapshot-cacheado no servidor ({ex_local_repo}). Baixando repositório oficial...")
+            # Etapa 3: Baixar arquivos ausentes do repositório oficial do HuggingFace (local_files_only=False)
+            try:
+                model = WhisperModel(
+                    repo_id,
+                    device="cpu",
+                    compute_type=compute_type,
+                    cpu_threads=cpu_threads,
+                    download_root=whisper_download_dir,
+                    local_files_only=False
+                )
+                logger.info(f"Download do modelo '{repo_id}' concluído com sucesso e salvo em {whisper_download_dir}!")
+            except Exception as ex_online:
+                logger.error(f"Erro no download oficial de '{repo_id}': {ex_online}")
+                # Etapa 4: Fallback final para medium
+                if model_size != "medium":
+                    logger.warning("Tentando fallback de emergência para o modelo 'medium'...")
+                    med_dir = get_model_local_dir("medium")
+                    if med_dir:
+                        model = WhisperModel(med_dir, device="cpu", compute_type="int8", cpu_threads=cpu_threads)
+                    else:
+                        model = WhisperModel("Systran/faster-whisper-medium", device="cpu", compute_type="int8", cpu_threads=cpu_threads, download_root=whisper_download_dir, local_files_only=False)
+                else:
+                    raise RuntimeError(f"Erro ao carregar o modelo Whisper '{model_size}': {ex_online}")
 
     # VAD Parameters para vídeos longos sem limite de tempo
     vad_options = None

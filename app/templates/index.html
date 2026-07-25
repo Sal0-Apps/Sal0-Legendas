@@ -1,252 +1,800 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sal0 Legendas — Sistema de Legendagem e Tradução Automática</title>
     <link rel="icon" href="/favicon.ico" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --input-bg: rgba(15, 23, 42, 0.6);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #8b5cf6;
-            --accent-hover: #7c3aed;
+            --bg-primary: #0a0914;
+            --bg-card: rgba(20, 18, 38, 0.85);
+            --bg-card-hover: rgba(28, 25, 54, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border-light: rgba(255, 255, 255, 0.18);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --teal-accent: #14b8a6;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --input-bg: rgba(0, 0, 0, 0.25);
+            --header-bg: rgba(20, 18, 38, 0.85);
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --radius-lg: 16px;
-            --radius-md: 10px;
-            --radius-sm: 6px;
-            --glass-border: rgba(255, 255, 255, 0.12);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        [data-theme="light"] {
+            --bg-primary: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --glass-border: #e2e8f0;
+            --glass-border-light: #cbd5e1;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.2);
+            --teal-accent: #14b8a6;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #f8fafc;
+            --header-bg: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
 
         body {
-            background: var(--bg-gradient);
+            background-color: var(--bg-primary);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 1050px;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            align-items: center;
+            padding: 1.5rem 1rem 3rem 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* HEADER & NAVBAR */
-        .app-header {
+        .container {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        /* ===================== HEADER ===================== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: var(--header-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 0.9rem 1.4rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .logo-area {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 1.2rem 1.5rem;
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(12px);
+            gap: 0.8rem;
         }
 
-        .app-title-group { display: flex; align-items: center; gap: 0.8rem; }
-        .app-title-group h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
+        .logo-img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--text-main) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .badge-version {
-            background: rgba(139, 92, 246, 0.2);
-            color: var(--accent);
-            border: 1px solid rgba(139, 92, 246, 0.4);
-            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--teal-accent));
+            color: #fff;
+            padding: 0.15rem 0.55rem;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            white-space: nowrap;
         }
 
-        .nav-tabs { display: flex; gap: 0.5rem; }
-        .tab-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 0.88rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        .tab-btn.active {
-            background: rgba(139, 92, 246, 0.15);
-            color: #c4b5fd;
-            border-color: rgba(139, 92, 246, 0.3);
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
 
-        /* CARDS & FORM ELEMENTS */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        .card-header { margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; }
-        .card-title { font-size: 1.1rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
-            gap: 1rem;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        .input-text, .select-input, textarea {
+        .header-btn {
             background: var(--input-bg);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 0.65rem 0.9rem;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            width: 100%;
-            outline: none;
-            transition: border-color 0.2s ease;
+            padding: 0.45rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
+
+        .header-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* ===================== NAVEGAÇÃO ===================== */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--bg-card);
+            padding: 0.4rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-card-hover);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--teal-accent));
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        /* ===================== CARDS ===================== */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.15rem 0.55rem;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* ===================== FORM ===================== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-text, .select-input, textarea {
+            width: 100%;
+            border: 1px solid var(--glass-border);
+            padding: 0.65rem 0.85rem;
+            background: var(--input-bg);
+            color: var(--text-main);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
         .input-text:focus, .select-input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        /* Source Type Selector - Pills */
+        .source-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .source-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.65rem 0.8rem;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .source-option:hover {
+            color: var(--text-main);
+            border-color: var(--glass-border-light);
+        }
+
+        .source-option.active {
+            color: #fff;
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .source-option input[type="radio"] { display: none; }
+
+        /* File Input Styling */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            background: var(--input-bg);
+            border: 2px dashed var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-input-wrapper input[type="file"]:hover {
             border-color: var(--accent);
         }
 
-        /* BUTTONS */
+        /* ===================== BUTTONS ===================== */
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
-            color: #fff;
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--teal-accent));
             border: none;
-            padding: 0.75rem 1.5rem;
+            color: #fff;
+            padding: 0.85rem 1.5rem;
             border-radius: var(--radius-md);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
-            width: 100%;
-            transition: transform 0.1s ease, box-shadow 0.2s ease;
-            display: inline-flex;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 20px var(--accent-glow);
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text-main);
+            background: var(--input-bg);
             border: 1px solid var(--glass-border);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
+            color: var(--text-main);
+            padding: 0.55rem 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.82rem;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        /* TIMELINE PROGRESS */
-        .progress-bar-bg { width: 100%; height: 8px; background: var(--input-bg); border-radius: 4px; overflow: hidden; margin: 1rem 0; }
-        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #8b5cf6, #3b82f6); transition: width 0.3s ease; }
-
-        /* REVISION EDITOR */
-        .correction-card { background: rgba(30, 27, 57, 0.9); border: 1px solid var(--accent); }
-
-        /* FOOTER */
-        footer { text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 1rem 0; }
-
-        /* MOBILE RESPONSIVE */
-        @media (max-width: 640px) {
-            body { padding: 0.8rem; }
-            .app-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
-            .nav-tabs { width: 100%; justify-content: space-between; }
-            .tab-btn { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+        .btn-secondary:hover {
+            border-color: var(--glass-border-light);
+            background: var(--bg-card-hover);
         }
+
+        .btn-cancel {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.45rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        /* ===================== PROGRESS ===================== */
+        .progress-bar-bg {
+            width: 100%;
+            background: var(--input-bg);
+            height: 10px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--teal-accent));
+            transition: width 0.3s ease;
+            border-radius: 20px;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-step.active {
+            color: var(--accent) !important;
+            font-weight: 700 !important;
+        }
+
+        .timeline-step.active .step-dot {
+            background: var(--accent) !important;
+            box-shadow: 0 0 12px var(--accent) !important;
+            animation: pulseDot 1.2s infinite ease-in-out !important;
+        }
+
+        @keyframes pulseDot {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .timeline-step.completed {
+            color: #34d399 !important;
+            font-weight: 600 !important;
+        }
+
+        .timeline-step.completed .step-dot {
+            background: #10b981 !important;
+            box-shadow: 0 0 6px #10b981 !important;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        /* ===================== EXPANDABLE SECTION ===================== */
+        .expand-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0.6rem 0;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 1.2rem;
+        }
+
+        .expand-toggle span {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .expand-toggle .arrow {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .expand-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .expand-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .expand-content.open {
+            max-height: 600px;
+        }
+
+        /* ===================== CORRECTION PANEL ===================== */
+        .correction-card {
+            border-color: var(--accent);
+        }
+
+        .segment-item {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.8rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .segment-item:hover {
+            border-color: var(--glass-border-light);
+        }
+
+        .segment-time-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .segment-time-row input {
+            width: 78px;
+            padding: 0.25rem 0.4rem;
+            text-align: center;
+            font-size: 0.78rem;
+        }
+
+        /* ===================== DOWNLOAD SUCCESS ===================== */
+        .download-card {
+            text-align: center;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .download-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .download-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            max-width: 500px;
+            margin: 1rem auto 0;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ===================== LIBRARY ===================== */
+        .library-section-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .library-item {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.8rem 1rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .library-item:hover {
+            border-color: var(--glass-border-light);
+            transform: translateY(-1px);
+        }
+
+        .library-item .info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .library-item .icon {
+            font-size: 1.3rem;
+            min-width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .library-item .title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .library-item .size {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .library-item .actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+
+        .library-item .actions button {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .library-item .actions button:hover {
+            border-color: var(--accent);
+        }
+
+        .library-item .actions .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .library-item .actions .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===================== FOOTER ===================== */
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 768px) {
+            body { padding: 0.8rem 0.6rem 2rem 0.6rem; }
+            header { flex-direction: column; gap: 0.8rem; align-items: flex-start; padding: 0.8rem 1rem; }
+            .header-actions { width: 100%; justify-content: flex-end; }
+            .nav-tabs { flex-direction: column; }
+            .tab-btn { justify-content: flex-start; padding: 0.55rem 0.8rem; }
+            .source-selector { flex-direction: column; }
+            .form-grid { grid-template-columns: 1fr; }
+            .card { padding: 1.2rem; }
+            .library-item { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+            .library-item .actions { width: 100%; justify-content: flex-end; }
+        }
+
+        /* ===================== SCROLLBAR ===================== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <div class="container">
 
-        <!-- HEADER DA APLICAÇÃO -->
-        <header class="app-header">
-                <img src="/logo.png" alt="Sal0 Legendas Logo" style="width: 38px; height: 38px; border-radius: 8px; box-shadow: 0 0 10px rgba(139, 92, 246, 0.5); object-fit: cover;">
-                <div>
-                    <h1>Sal0 Legendas</h1>
-                    <span class="badge-version">v1.0.6 Stable</span>
-                </div>
+        <!-- ===================== HEADER ===================== -->
+        <header>
+            <div class="logo-area">
+                <img src="/logo.png" alt="Sal0 Legendas" class="logo-img">
+                <h1>Sal0 Legendas <span class="badge-version">v1.0.8</span></h1>
             </div>
-            <nav class="nav-tabs">
-                <button type="button" class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">🎬 Legendador</button>
-                <button type="button" class="tab-btn" id="tabLibraryBtn" onclick="switchTab('library')">📁 Biblioteca & Legendas</button>
-                <button type="button" class="tab-btn" id="tabSettingsBtn" onclick="switchTab('settings')">⚙️ Ajustes</button>
-            </nav>
+            <div class="header-actions">
+                <button type="button" class="header-btn" onclick="toggleTheme()" id="themeToggleBtn">🌙 Tema</button>
+            </div>
         </header>
+
+        <!-- ===================== NAVEGAÇÃO ===================== -->
+        <nav class="nav-tabs">
+            <button type="button" class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">📝 Legendador</button>
+            <button type="button" class="tab-btn" id="tabLibraryBtn" onclick="switchTab('library')">📁 Biblioteca</button>
+            <button type="button" class="tab-btn" id="tabSettingsBtn" onclick="switchTab('settings')">⚙️ Ajustes</button>
+        </nav>
 
         <!-- ============================================================= -->
         <!-- ABA 1: LEGENDADOR & TRADUTOR -->
         <!-- ============================================================= -->
         <div id="mainTabContent">
-            
-            <!-- SELEÇÃO DE ARQUIVO OU YOUTUBE -->
-            <div class="card" style="margin-bottom: 1.5rem;">
+
+            <!-- CARD: Seleção de Fonte -->
+            <div class="card">
                 <div class="card-header">
                     <span class="card-title">🎵 1. Escolha o Vídeo ou Áudio</span>
-                    <span style="font-size: 0.78rem; color: var(--success); font-weight: 600; background: rgba(16, 185, 129, 0.15); padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                        ✓ Sem Limite de Tempo
-                    </span>
+                    <span class="badge-pill badge-success">✓ Sem Limite</span>
                 </div>
 
-                <!-- Radio Selector -->
-                <div style="display: flex; gap: 1.5rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
-                        <input type="radio" name="source_type" value="file" checked onchange="toggleSourceType('file')"> 📁 Enviar Arquivo Local
+                <div class="source-selector" id="sourceSelector">
+                    <label class="source-option active" data-source="file">
+                        <input type="radio" name="source_type" value="file" checked>
+                        📁 Arquivo Local
                     </label>
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
-                        <input type="radio" name="source_type" value="youtube" onchange="toggleSourceType('youtube')"> 🌐 Link do YouTube
+                    <label class="source-option" data-source="youtube">
+                        <input type="radio" name="source_type" value="youtube">
+                        🌐 YouTube
                     </label>
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
-                        <input type="radio" name="source_type" value="library" onchange="toggleSourceType('library')"> 📚 Biblioteca
+                    <label class="source-option" data-source="library">
+                        <input type="radio" name="source_type" value="library">
+                        📚 Biblioteca
                     </label>
                 </div>
 
                 <!-- Input Upload Arquivo -->
                 <div id="sourceFileDiv" class="form-group">
                     <span class="label">Selecione o Vídeo / Áudio (MP4, MKV, MP3, WAV, etc)</span>
-                    <input type="file" id="videoFileInput" accept="video/*,audio/*" class="input-text">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="videoFileInput" accept="video/*,audio/*" class="input-text">
+                    </div>
                 </div>
 
                 <!-- Input YouTube -->
                 <div id="sourceYoutubeDiv" class="form-group" style="display: none;">
                     <span class="label">Cole a URL do Vídeo do YouTube</span>
-                    <input type="text" id="youtubeUrlInput" placeholder="Ex: https://www.youtube.com/watch?v=..." class="input-text">
+                    <input type="text" id="youtubeUrlInput" placeholder="https://www.youtube.com/watch?v=..." class="input-text">
                 </div>
 
                 <!-- Input Biblioteca -->
                 <div id="sourceLibraryDiv" class="form-group" style="display: none;">
-                    <span class="label">Selecione um Vídeo já enviado da Biblioteca</span>
+                    <span class="label">Selecione um Vídeo da Biblioteca</span>
                     <select id="libraryVideoSelect" class="select-input">
                         <option value="">Carregando biblioteca...</option>
                     </select>
                 </div>
             </div>
 
-            <!-- IDIOMA & OPÇÕES DE LEGENDA -->
-            <div class="card" style="margin-bottom: 1.5rem;">
+            <!-- CARD: Configurações de Tradução & Legenda -->
+            <div class="card">
                 <div class="card-header">
-                    <span class="card-title">🌐 2. Tradução & Configurações de Legenda</span>
+                    <span class="card-title">🌐 2. Tradução & Configurações</span>
                 </div>
 
                 <div class="form-grid">
                     <div class="form-group">
-                        <span class="label">🌐 Traduzir Para (Padrão: pt-BR)</span>
+                        <span class="label">🌐 Traduzir Para</span>
                         <select id="targetLanguage" class="select-input">
                             <option value="pt-BR" selected>🇧🇷 Português (Brasil)</option>
                             <option value="en">🇺🇸 Inglês (English)</option>
@@ -260,7 +808,7 @@
                     </div>
 
                     <div class="form-group">
-                        <span class="label">🗣️ Idioma Original do Áudio</span>
+                        <span class="label">🗣️ Idioma Original</span>
                         <select id="sourceLanguage" class="select-input">
                             <option value="auto" selected>Auto-detectar (Recomendado)</option>
                             <option value="en">Inglês</option>
@@ -284,35 +832,35 @@
                     <div class="form-group">
                         <span class="label">📄 Formato de Exportação</span>
                         <select id="exportFormat" class="select-input">
-                            <option value="video" selected>Vídeo MP4 com Legenda Embutida</option>
-                            <option value="subtitles_only">Apenas Arquivos de Legenda (.SRT, .VTT, .ASS)</option>
+                            <option value="video" selected>Vídeo MP4 com Legenda</option>
+                            <option value="subtitles_only">Apenas Legendas (.SRT, .VTT, .ASS)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <span class="label">✏️ Pausa 75% (Revisão Intermediária)</span>
+                        <span class="label">✏️ Revisão Intermediária</span>
                         <select id="enableCorrection" class="select-input">
-                            <option value="false" selected>Não (Direta)</option>
-                            <option value="true">Sim (Pausar 75% para Revisar)</option>
+                            <option value="false" selected>Não (Processamento Direto)</option>
+                            <option value="true">Sim (Pausar em 75% para Revisar)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <span class="label">🔇 Filtro Silero VAD (Ruído)</span>
+                        <span class="label">🔇 Filtro VAD (Ruído)</span>
                         <select id="enableVad" class="select-input">
-                            <option value="true" selected>Ativado (Suporta Vídeos Longos)</option>
+                            <option value="true" selected>Ativado (Recomendado)</option>
                             <option value="false">Desativado</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- OPÇÕES AVANÇADAS EXPANSÍVEIS (Estilização de Legenda) -->
-                <div style="margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--glass-border);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                        <span style="font-size: 0.88rem; font-weight: 600; color: var(--accent);">🎨 Estilização da Legenda (Para Vídeo Embutido)</span>
-                    </div>
-
-                    <div class="form-grid">
+                <!-- Seção Expansível: Estilização de Legenda -->
+                <div class="expand-toggle" id="styleToggle" onclick="toggleExpand()">
+                    <span>🎨 Estilização da Legenda (Vídeo Embutido)</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="expand-content" id="styleContent">
+                    <div class="form-grid" style="padding-top: 1rem;">
                         <div class="form-group">
                             <span class="label">Posição na Tela</span>
                             <select id="textPosition" class="select-input">
@@ -324,7 +872,7 @@
 
                         <div class="form-group">
                             <span class="label">Cor da Fonte</span>
-                            <input type="color" id="textColor" value="#FFFFFF" style="width: 100%; height: 38px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; background: transparent;">
+                            <input type="color" id="textColor" value="#FFFFFF" style="width: 100%; height: 38px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; background: var(--input-bg);">
                         </div>
 
                         <div class="form-group">
@@ -333,7 +881,7 @@
                         </div>
 
                         <div class="form-group">
-                            <span class="label">Caixa de Fundo Escura (Box)</span>
+                            <span class="label">Caixa de Fundo</span>
                             <select id="showBoxBackground" class="select-input">
                                 <option value="true" selected>Sim (Facilita Leitura)</option>
                                 <option value="false">Não (Apenas Contorno)</option>
@@ -342,66 +890,86 @@
                     </div>
                 </div>
 
-                <!-- Botão de Iniciar Processo -->
+                <!-- Botão de Iniciar -->
                 <div style="margin-top: 1.5rem;">
                     <button type="button" id="btnSubmitProcess" class="btn-primary">🎬 Legendar & Traduzir Vídeo</button>
                 </div>
             </div>
 
-            <!-- CARD DE PROGRESSO DA TAREFA -->
-            <div class="card" id="processCard" style="display: none; margin-bottom: 1.5rem;">
+            <!-- CARD: Progresso -->
+            <div class="card" id="processCard" style="display: none;">
                 <div class="card-header">
                     <span class="card-title">⏳ Processando Legendas...</span>
-                    <button type="button" class="btn-secondary btn-cancel-task" style="color: #fca5a5; background: rgba(239, 68, 68, 0.15);">🛑 Cancelar</button>
+                    <button type="button" class="btn-cancel" id="btnCancelProcess">🛑 Cancelar</button>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; font-size: 0.88rem;">
-                    <span id="processStepText">Iniciando...</span>
-                    <span id="processPercentText" style="font-weight: 700; color: var(--accent);">0%</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                    <span id="processStepText" style="font-size: 0.88rem; font-weight: 500;">Iniciando...</span>
+                    <span id="processPercentText" style="font-weight: 800; font-size: 1.1rem; color: var(--accent);">0%</span>
                 </div>
 
                 <div class="progress-bar-bg">
                     <div class="progress-bar-fill" id="progressBarFill"></div>
                 </div>
+
+                <div class="timeline" id="processTimeline">
+                    <div class="timeline-step active" id="step-upload">
+                        <div class="step-dot"></div>
+                        <span>Upload & Preparação</span>
+                    </div>
+                    <div class="timeline-step" id="step-separate">
+                        <div class="step-dot"></div>
+                        <span>Separação de Áudio (Demucs)</span>
+                    </div>
+                    <div class="timeline-step" id="step-transcribe">
+                        <div class="step-dot"></div>
+                        <span>Transcrição IA (Whisper)</span>
+                    </div>
+                    <div class="timeline-step" id="step-translate">
+                        <div class="step-dot"></div>
+                        <span>Tradução & Legendas</span>
+                    </div>
+                    <div class="timeline-step" id="step-render">
+                        <div class="step-dot"></div>
+                        <span>Renderização Final</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- CARD DE REVISÃO E EDIÇÃO (PAUSA 75%) -->
-            <div id="correctionCard" class="card correction-card" style="display: none; margin-bottom: 1.5rem;">
+            <!-- CARD: Revisão e Edição -->
+            <div id="correctionCard" class="card correction-card" style="display: none;">
                 <div class="card-header">
                     <span class="card-title">✏️ Revisão & Edição de Legendas</span>
-                    <button type="button" id="btnContinueProcess" class="btn-primary" style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.85rem;">🚀 Salvar e Renderizar Final</button>
+                    <button type="button" id="btnContinueProcess" class="btn-primary" style="width: auto; padding: 0.55rem 1.2rem; font-size: 0.85rem;">🚀 Salvar & Renderizar</button>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
-                    <!-- Coluna A: Preview do Vídeo com Legenda -->
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+                    <!-- Preview do Vídeo -->
+                    <div style="display: flex; flex-direction: column; gap: 0.6rem;">
                         <span class="label">📺 Pré-visualização ao Vivo</span>
-                        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-md); overflow: hidden;">
                             <video id="previewVideoEl" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
                         </div>
                     </div>
 
-                    <!-- Coluna B: Lista de Estrofes Transcritas/Traduzidas -->
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                        <span class="label">📜 Trechos (MM:SS.ms)</span>
-                        <div id="correctionList" style="display: flex; flex-direction: column; gap: 0.8rem; max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
-                            <!-- Preenchido dinamicamente por JS -->
-                        </div>
+                    <!-- Lista de Segmentos -->
+                    <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                        <span class="label">📜 Trechos Transcritos</span>
+                        <div id="correctionList" style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 400px; overflow-y: auto; padding-right: 0.4rem;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- CARD DE DOWNLOAD CONCLUÍDO -->
-            <div class="card" id="downloadBox" style="display: none; text-align: center; border-color: rgba(16, 185, 129, 0.4);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
-                <h3 style="font-size: 1.2rem; color: var(--text-main); margin-bottom: 0.4rem;">Legendas Concluídas com Sucesso!</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">Seu vídeo legendado ou arquivos de legenda estão prontos para download.</p>
-
-                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; max-width: 500px; margin: 0 auto;">
-                    <button type="button" id="btnDownloadVideo" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);">⬇️ Baixar Vídeo MP4 (.mp4)</button>
-                    <button type="button" onclick="downloadSubtitle('srt')" class="btn-secondary">📄 Baixar .SRT</button>
-                    <button type="button" onclick="downloadSubtitle('vtt')" class="btn-secondary">📄 Baixar .VTT</button>
-                    <button type="button" onclick="downloadSubtitle('ass')" class="btn-secondary">📄 Baixar .ASS</button>
+            <!-- CARD: Download Concluído -->
+            <div class="card download-card" id="downloadBox" style="display: none;">
+                <div class="download-icon">🎉</div>
+                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem;">Legendas Concluídas!</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted);">Seu vídeo legendado e arquivos de legenda estão prontos.</p>
+                <div class="download-actions">
+                    <button type="button" id="btnDownloadVideo" class="btn-download">⬇️ Baixar Vídeo MP4</button>
+                    <button type="button" onclick="downloadSubtitle('srt')" class="btn-secondary">📄 .SRT</button>
+                    <button type="button" onclick="downloadSubtitle('vtt')" class="btn-secondary">📄 .VTT</button>
+                    <button type="button" onclick="downloadSubtitle('ass')" class="btn-secondary">📄 .ASS</button>
                 </div>
             </div>
 
@@ -417,22 +985,22 @@
                     <button type="button" onclick="loadLibrary()" class="btn-secondary">🔄 Atualizar</button>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <!-- Seção Legendas Geradas -->
+                <div style="display: flex; flex-direction: column; gap: 1.8rem;">
+                    <!-- Legendas Geradas -->
                     <div>
-                        <span class="label" style="color: var(--accent); margin-bottom: 0.6rem; display: block;">📄 Legendas Geradas (.SRT, .VTT, .ASS)</span>
+                        <div class="library-section-label" style="color: var(--accent);">📄 Legendas Geradas</div>
                         <div id="subtitlesList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
                     </div>
 
-                    <!-- Seção Vídeos Legendados Prontos -->
+                    <!-- Histórico de Vídeos -->
                     <div>
-                        <span class="label" style="color: var(--success); margin-bottom: 0.6rem; display: block;">🎬 Histórico de Vídeos Legendados (.MP4)</span>
+                        <div class="library-section-label" style="color: var(--success);">🎬 Vídeos Legendados</div>
                         <div id="historyList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
                     </div>
 
-                    <!-- Seção Vídeos Originais -->
+                    <!-- Vídeos Originais -->
                     <div>
-                        <span class="label" style="color: var(--text-muted); margin-bottom: 0.6rem; display: block;">📁 Vídeos / Áudios Enviados</span>
+                        <div class="library-section-label" style="color: var(--text-muted);">📁 Vídeos / Áudios Enviados</div>
                         <div id="videosList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
                     </div>
                 </div>
@@ -440,11 +1008,11 @@
         </div>
 
         <!-- ============================================================= -->
-        <!-- ABA 3: AJUSTES & CONFIGURAÇÕES -->
+        <!-- ABA 3: AJUSTES -->
         <!-- ============================================================= -->
         <div id="settingsTabContent" style="display: none;">
-            <!-- Credenciais do Telegram -->
-            <div class="card" style="margin-bottom: 1.5rem;">
+            <!-- Telegram -->
+            <div class="card">
                 <div class="card-header">
                     <span class="card-title">✈️ Bot do Telegram</span>
                 </div>
@@ -459,38 +1027,57 @@
                     </div>
                 </div>
                 <div style="margin-top: 1rem;">
-                    <button type="button" onclick="saveTelegram()" class="btn-primary" style="max-width: 200px;">💾 Salvar Telegram</button>
+                    <button type="button" onclick="saveTelegram()" class="btn-primary" style="max-width: 220px;">💾 Salvar Telegram</button>
                 </div>
             </div>
 
-            <!-- IP Externo / Acesso Remoto -->
+            <!-- IP Externo -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">🌐 IP / URL de Acesso Remoto</span>
+                    <span class="card-title">🌐 Acesso Remoto</span>
                 </div>
                 <div class="form-group">
                     <span class="label">URL Externa do Servidor</span>
-                    <input type="text" id="externalUrlInput" class="input-text" placeholder="Ex: http://192.168.1.100:8001">
+                    <input type="text" id="externalUrlInput" class="input-text" placeholder="http://192.168.1.100:8001">
                 </div>
                 <div style="margin-top: 1rem;">
-                    <button type="button" onclick="saveExternalUrl()" class="btn-primary" style="max-width: 200px;">💾 Salvar URL Externa</button>
+                    <button type="button" onclick="saveExternalUrl()" class="btn-primary" style="max-width: 220px;">💾 Salvar URL</button>
                 </div>
             </div>
         </div>
 
         <!-- RODAPÉ -->
-        <footer>
-            Sal0 Legendas v1.0.0 Stable — Sistema de Legendagem e Tradução Automática
-        </footer>
+        <footer>Sal0 Legendas v1.0.8 — Sistema de Legendagem e Tradução Automática com IA</footer>
 
     </div>
 
-    <!-- JAVASCRIPT PRINCIPAL DA INTERFACE -->
+    <!-- ===================== JAVASCRIPT ===================== -->
     <script>
         let currentSegments = [];
         let pollingInterval = null;
 
-        // Alternar abas
+        // ==================== TEMA ====================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('sal0-legendas-theme', next);
+            document.getElementById('themeToggleBtn').textContent = next === 'dark' ? '🌙 Tema' : '☀️ Tema';
+        }
+
+        // Restore theme
+        (function() {
+            const saved = localStorage.getItem('sal0-legendas-theme');
+            if (saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+                if (saved === 'light') {
+                    document.getElementById('themeToggleBtn').textContent = '☀️ Tema';
+                }
+            }
+        })();
+
+        // ==================== ABAS ====================
         function switchTab(tab) {
             document.getElementById('mainTabContent').style.display = tab === 'main' ? 'block' : 'none';
             document.getElementById('libraryTabContent').style.display = tab === 'library' ? 'block' : 'none';
@@ -503,13 +1090,29 @@
             if (tab === 'library') loadLibrary();
         }
 
-        function toggleSourceType(type) {
-            document.getElementById('sourceFileDiv').style.display = type === 'file' ? 'flex' : 'none';
-            document.getElementById('sourceYoutubeDiv').style.display = type === 'youtube' ? 'flex' : 'none';
-            document.getElementById('sourceLibraryDiv').style.display = type === 'library' ? 'flex' : 'none';
+        // ==================== SOURCE TYPE SELECTOR ====================
+        document.querySelectorAll('.source-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.source-option').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                opt.querySelector('input[type="radio"]').checked = true;
+
+                const type = opt.dataset.source;
+                document.getElementById('sourceFileDiv').style.display = type === 'file' ? 'flex' : 'none';
+                document.getElementById('sourceYoutubeDiv').style.display = type === 'youtube' ? 'flex' : 'none';
+                document.getElementById('sourceLibraryDiv').style.display = type === 'library' ? 'flex' : 'none';
+            });
+        });
+
+        // ==================== EXPANDABLE SECTION ====================
+        function toggleExpand() {
+            const toggle = document.getElementById('styleToggle');
+            const content = document.getElementById('styleContent');
+            toggle.classList.toggle('open');
+            content.classList.toggle('open');
         }
 
-        // Requisições com Autenticação
+        // ==================== AUTH FETCH ====================
         async function authFetch(url, options = {}) {
             const token = localStorage.getItem('auth_token') || '';
             options.headers = options.headers || {};
@@ -520,7 +1123,7 @@
             return fetch(url, options);
         }
 
-        // Submeter Processamento
+        // ==================== SUBMIT PROCESS ====================
         document.getElementById('btnSubmitProcess').onclick = async () => {
             const sourceType = document.querySelector('input[name="source_type"]:checked').value;
             const formData = new FormData();
@@ -562,6 +1165,7 @@
             document.getElementById('btnSubmitProcess').disabled = true;
             document.getElementById('processCard').style.display = 'block';
             document.getElementById('downloadBox').style.display = 'none';
+            resetTimeline();
 
             try {
                 const res = await authFetch('/api/process', { method: 'POST', body: formData });
@@ -577,7 +1181,36 @@
             }
         };
 
-        // Polling de Status
+        // ==================== TIMELINE MANAGEMENT ====================
+        function resetTimeline() {
+            const steps = document.querySelectorAll('.timeline-step');
+            steps.forEach(s => { s.className = 'timeline-step'; });
+            document.getElementById('step-upload').classList.add('active');
+        }
+
+        function updateTimeline(progress, stepText) {
+            const stepMap = [
+                { id: 'step-upload', threshold: 10 },
+                { id: 'step-separate', threshold: 30 },
+                { id: 'step-transcribe', threshold: 55 },
+                { id: 'step-translate', threshold: 80 },
+                { id: 'step-render', threshold: 95 }
+            ];
+
+            let activeIdx = 0;
+            for (let i = 0; i < stepMap.length; i++) {
+                if (progress >= stepMap[i].threshold) activeIdx = i;
+            }
+
+            stepMap.forEach((step, idx) => {
+                const el = document.getElementById(step.id);
+                el.className = 'timeline-step';
+                if (idx < activeIdx) el.classList.add('completed');
+                else if (idx === activeIdx) el.classList.add('active');
+            });
+        }
+
+        // ==================== POLLING ====================
         function startPolling() {
             if (pollingInterval) clearInterval(pollingInterval);
             pollingInterval = setInterval(async () => {
@@ -586,9 +1219,14 @@
                     if (!res.ok) return;
                     const data = await res.json();
 
-                    document.getElementById('processStepText').innerText = data.step || "Processando...";
-                    document.getElementById('processPercentText').innerText = (data.progress || 0) + "%";
-                    document.getElementById('progressBarFill').style.width = (data.progress || 0) + "%";
+                    const progress = data.progress || 0;
+                    const stepText = data.step || "Processando...";
+
+                    document.getElementById('processStepText').innerText = stepText;
+                    document.getElementById('processPercentText').innerText = progress + "%";
+                    document.getElementById('progressBarFill').style.width = progress + "%";
+
+                    updateTimeline(progress, stepText);
 
                     if (data.status === "waiting_for_user_correction") {
                         clearInterval(pollingInterval);
@@ -608,7 +1246,7 @@
             }, 1500);
         }
 
-        // Formatação de Tempos (MM:SS.ms)
+        // ==================== TIME FORMATTING ====================
         function formatTimeMMSS(sec) {
             if (isNaN(sec) || sec < 0) sec = 0;
             const mins = Math.floor(sec / 60);
@@ -628,7 +1266,7 @@
             return parseFloat(str) || 0;
         }
 
-        // Carregar Painel de Revisão
+        // ==================== CORRECTION PANEL ====================
         async function loadCorrectionPanel() {
             try {
                 const res = await authFetch('/api/segments_to_edit');
@@ -649,24 +1287,15 @@
 
             currentSegments.forEach((seg, idx) => {
                 const card = document.createElement('div');
-                card.style.background = "var(--input-bg)";
-                card.style.padding = "0.75rem";
-                card.style.borderRadius = "8px";
-                card.style.display = "flex";
-                card.style.flexDirection = "column";
-                card.style.gap = "0.4rem";
+                card.className = 'segment-item';
 
                 const timeRow = document.createElement('div');
-                timeRow.style.display = "flex";
-                timeRow.style.alignItems = "center";
-                timeRow.style.gap = "0.4rem";
-                timeRow.style.fontSize = "0.75rem";
-
+                timeRow.className = 'segment-time-row';
                 timeRow.innerHTML = `
                     <span>⏱️ Início:</span>
-                    <input type="text" class="input-text" style="width:75px; padding:0.2rem; text-align:center;" value="${formatTimeMMSS(seg.start)}" onchange="seg.start=parseTimeMMSS(this.value)">
+                    <input type="text" class="input-text" value="${formatTimeMMSS(seg.start)}" onchange="currentSegments[${idx}].start=parseTimeMMSS(this.value)">
                     <span>Fim:</span>
-                    <input type="text" class="input-text" style="width:75px; padding:0.2rem; text-align:center;" value="${formatTimeMMSS(seg.end)}" onchange="seg.end=parseTimeMMSS(this.value)">
+                    <input type="text" class="input-text" value="${formatTimeMMSS(seg.end)}" onchange="currentSegments[${idx}].end=parseTimeMMSS(this.value)">
                 `;
 
                 const textInput = document.createElement('input');
@@ -674,8 +1303,8 @@
                 textInput.className = "input-text";
                 textInput.value = seg.translated_text || seg.text || "";
                 textInput.oninput = (e) => {
-                    seg.translated_text = e.target.value;
-                    seg.text = e.target.value;
+                    currentSegments[idx].translated_text = e.target.value;
+                    currentSegments[idx].text = e.target.value;
                 };
 
                 card.appendChild(timeRow);
@@ -695,40 +1324,63 @@
             startPolling();
         };
 
-        // Downloads
+        // ==================== CANCEL ====================
+        document.getElementById('btnCancelProcess').onclick = async () => {
+            if (!confirm('Cancelar processamento?')) return;
+            try {
+                await authFetch('/api/cancel', { method: 'POST' });
+            } catch(e) {}
+            if (pollingInterval) clearInterval(pollingInterval);
+            document.getElementById('processCard').style.display = 'none';
+            document.getElementById('btnSubmitProcess').disabled = false;
+        };
+
+        // ==================== DOWNLOADS ====================
         document.getElementById('btnDownloadVideo').onclick = () => window.location.href = '/api/download';
+
         function downloadSubtitle(fmt) {
             const filename = (document.getElementById('processStepText').innerText || "legenda").replace(/[^a-zA-Z0-9_-]/g, "_") + "." + fmt;
             window.location.href = `/api/subtitles/download/${fmt}/${filename}`;
         }
 
-        // Carregar Biblioteca
+        // ==================== LIBRARY ====================
         async function loadLibrary() {
             try {
                 const res = await authFetch('/api/library');
                 if (!res.ok) return;
                 const data = await res.json();
 
-                const renderSection = (items, containerId, section) => {
+                const renderSection = (items, containerId, section, iconEmoji) => {
                     const el = document.getElementById(containerId);
-                    el.innerHTML = items.length ? "" : "<p style='font-size:0.8rem; color:var(--text-muted);'>Nenhum arquivo.</p>";
+                    if (!items.length) {
+                        el.innerHTML = `<div class="empty-state">Nenhum arquivo encontrado.</div>`;
+                        return;
+                    }
+                    el.innerHTML = "";
                     items.forEach(item => {
                         const div = document.createElement('div');
-                        div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
-                        div.style.padding = '0.5rem 0.8rem'; div.style.background = 'var(--input-bg)'; div.style.borderRadius = '6px';
+                        div.className = 'library-item';
                         div.innerHTML = `
-                            <span style="font-size:0.85rem; font-weight:500;">${item.filename} (${item.size_mb} MB)</span>
-                            <button class="btn-secondary" onclick="deleteLibraryItem('${section}', '${item.filename}')">🗑️</button>
+                            <div class="info">
+                                <div class="icon">${iconEmoji}</div>
+                                <div>
+                                    <div class="title">${item.filename}</div>
+                                    <div class="size">${item.size_mb} MB</div>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-delete" onclick="deleteLibraryItem('${section}', '${item.filename}')">🗑️</button>
+                            </div>
                         `;
                         el.appendChild(div);
                     });
                 };
 
-                renderSection(data.subtitles, 'subtitlesList', 'subtitles');
-                renderSection(data.history, 'historyList', 'history');
-                renderSection(data.videos, 'videosList', 'videos');
+                renderSection(data.subtitles, 'subtitlesList', 'subtitles', '📄');
+                renderSection(data.history, 'historyList', 'history', '🎬');
+                renderSection(data.videos, 'videosList', 'videos', '📁');
 
-                // Atualizar select de vídeos
+                // Update library select
                 const select = document.getElementById('libraryVideoSelect');
                 select.innerHTML = "<option value=''>Selecione um vídeo...</option>";
                 data.videos.forEach(v => {
@@ -743,7 +1395,57 @@
             loadLibrary();
         }
 
-        window.onload = () => { loadLibrary(); };
+        // ==================== SETTINGS ====================
+        async function saveTelegram() {
+            const token = document.getElementById('telegramTokenInput').value.trim();
+            const chatId = document.getElementById('telegramChatIdInput').value.trim();
+            try {
+                const res = await authFetch('/api/settings/telegram', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bot_token: token, chat_id: chatId })
+                });
+                if (res.ok) alert('Telegram salvo!');
+                else alert('Erro ao salvar Telegram.');
+            } catch(e) { alert('Erro: ' + e.message); }
+        }
+
+        async function saveExternalUrl() {
+            const url = document.getElementById('externalUrlInput').value.trim();
+            try {
+                const res = await authFetch('/api/settings/external_url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                if (res.ok) alert('URL externa salva!');
+                else alert('Erro ao salvar URL.');
+            } catch(e) { alert('Erro: ' + e.message); }
+        }
+
+        async function loadSettings() {
+            try {
+                const resTg = await authFetch('/api/settings/telegram');
+                if (resTg.ok) {
+                    const tg = await resTg.json();
+                    if (tg.bot_token) document.getElementById('telegramTokenInput').value = tg.bot_token;
+                    if (tg.chat_id) document.getElementById('telegramChatIdInput').value = tg.chat_id;
+                }
+            } catch(e) {}
+            try {
+                const resUrl = await authFetch('/api/settings/external_url');
+                if (resUrl.ok) {
+                    const urlData = await resUrl.json();
+                    if (urlData.url) document.getElementById('externalUrlInput').value = urlData.url;
+                }
+            } catch(e) {}
+        }
+
+        // ==================== INIT ====================
+        window.onload = () => {
+            loadLibrary();
+            loadSettings();
+        };
     </script>
 </body>
 </html>

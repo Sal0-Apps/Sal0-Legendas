@@ -1,0 +1,26 @@
+# === DADOS GERADOS PELO APP (não commitar) ===
+/data/*
+!/data/.gitkeep
+
+# === PYTHON ===
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# === CREDENCIAIS E TOKENS (NUNCA commitar no Git) ===
+.env
+.env.*
+!.env.example
+.env_deploy
+*.token
+*.key
+
+# === LOGS E TEMPORÁRIOS ===
+*.log
+logs/
+scratch/
+*.tmp

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sal0 Legendas - Legendador & Tradutor Automático de Vídeos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --glass-border: rgba(255, 255, 255, 0.12);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1050px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* HEADER & NAVBAR */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1.2rem 1.5rem;
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(12px);
+        }
+
+        .app-title-group { display: flex; align-items: center; gap: 0.8rem; }
+        .app-title-group h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
+        .badge-version {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-tabs { display: flex; gap: 0.5rem; }
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        /* CARDS & FORM ELEMENTS */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .card-header { margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 1.1rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+            gap: 1rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .input-text, .select-input, textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.65rem 0.9rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .input-text:focus, .select-input:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* TIMELINE PROGRESS */
+        .progress-bar-bg { width: 100%; height: 8px; background: var(--input-bg); border-radius: 4px; overflow: hidden; margin: 1rem 0; }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #8b5cf6, #3b82f6); transition: width 0.3s ease; }
+
+        /* REVISION EDITOR */
+        .correction-card { background: rgba(30, 27, 57, 0.9); border: 1px solid var(--accent); }
+
+        /* FOOTER */
+        footer { text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 1rem 0; }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 640px) {
+            body { padding: 0.8rem; }
+            .app-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .nav-tabs { width: 100%; justify-content: space-between; }
+            .tab-btn { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- HEADER DA APLICAÇÃO -->
+        <header class="app-header">
+            <div class="app-title-group">
+                <span style="font-size: 1.6rem;">🎬</span>
+                <div>
+                    <h1>Sal0 Legendas</h1>
+                    <span class="badge-version">v1.0.0 Stable</span>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button type="button" class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">🎬 Legendador</button>
+                <button type="button" class="tab-btn" id="tabLibraryBtn" onclick="switchTab('library')">📁 Biblioteca & Legendas</button>
+                <button type="button" class="tab-btn" id="tabSettingsBtn" onclick="switchTab('settings')">⚙️ Ajustes</button>
+            </nav>
+        </header>
+
+        <!-- ============================================================= -->
+        <!-- ABA 1: LEGENDADOR & TRADUTOR -->
+        <!-- ============================================================= -->
+        <div id="mainTabContent">
+            
+            <!-- SELEÇÃO DE ARQUIVO OU YOUTUBE -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <span class="card-title">🎵 1. Escolha o Vídeo ou Áudio</span>
+                    <span style="font-size: 0.78rem; color: var(--success); font-weight: 600; background: rgba(16, 185, 129, 0.15); padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        ✓ Sem Limite de Tempo
+                    </span>
+                </div>
+
+                <!-- Radio Selector -->
+                <div style="display: flex; gap: 1.5rem; margin-bottom: 1.2rem; font-size: 0.88rem;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                        <input type="radio" name="source_type" value="file" checked onchange="toggleSourceType('file')"> 📁 Enviar Arquivo Local
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                        <input type="radio" name="source_type" value="youtube" onchange="toggleSourceType('youtube')"> 🌐 Link do YouTube
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                        <input type="radio" name="source_type" value="library" onchange="toggleSourceType('library')"> 📚 Biblioteca
+                    </label>
+                </div>
+
+                <!-- Input Upload Arquivo -->
+                <div id="sourceFileDiv" class="form-group">
+                    <span class="label">Selecione o Vídeo / Áudio (MP4, MKV, MP3, WAV, etc)</span>
+                    <input type="file" id="videoFileInput" accept="video/*,audio/*" class="input-text">
+                </div>
+
+                <!-- Input YouTube -->
+                <div id="sourceYoutubeDiv" class="form-group" style="display: none;">
+                    <span class="label">Cole a URL do Vídeo do YouTube</span>
+                    <input type="text" id="youtubeUrlInput" placeholder="Ex: https://www.youtube.com/watch?v=..." class="input-text">
+                </div>
+
+                <!-- Input Biblioteca -->
+                <div id="sourceLibraryDiv" class="form-group" style="display: none;">
+                    <span class="label">Selecione um Vídeo já enviado da Biblioteca</span>
+                    <select id="libraryVideoSelect" class="select-input">
+                        <option value="">Carregando biblioteca...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- IDIOMA & OPÇÕES DE LEGENDA -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <span class="card-title">🌐 2. Tradução & Configurações de Legenda</span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="label">🌐 Traduzir Para (Padrão: pt-BR)</span>
+                        <select id="targetLanguage" class="select-input">
+                            <option value="pt-BR" selected>🇧🇷 Português (Brasil)</option>
+                            <option value="en">🇺🇸 Inglês (English)</option>
+                            <option value="es">🇪🇸 Espanhol (Español)</option>
+                            <option value="fr">🇫🇷 Francês (Français)</option>
+                            <option value="de">🇩🇪 Alemão (Deutsch)</option>
+                            <option value="it">🇮🇹 Italiano (Italiano)</option>
+                            <option value="ja">🇯🇵 Japonês (日本語)</option>
+                            <option value="zh">🇨🇳 Chinês (中文)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="label">🗣️ Idioma Original do Áudio</span>
+                        <select id="sourceLanguage" class="select-input">
+                            <option value="auto" selected>Auto-detectar (Recomendado)</option>
+                            <option value="en">Inglês</option>
+                            <option value="es">Espanhol</option>
+                            <option value="pt">Português</option>
+                            <option value="ja">Japonês</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="label">🤖 Modelo IA Whisper</span>
+                        <select id="whisperModel" class="select-input">
+                            <option value="large-v3-turbo" selected>Large v3 Turbo (Padrão)</option>
+                            <option value="medium">Medium (Estável)</option>
+                            <option value="small">Small (Rápido)</option>
+                            <option value="tiny">Tiny (Ultra Rápido)</option>
+                            <option value="large-v3">Large v3 (Máxima Precisão)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="label">📄 Formato de Exportação</span>
+                        <select id="exportFormat" class="select-input">
+                            <option value="video" selected>Vídeo MP4 com Legenda Embutida</option>
+                            <option value="subtitles_only">Apenas Arquivos de Legenda (.SRT, .VTT, .ASS)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="label">✏️ Pausa 75% (Revisão Intermediária)</span>
+                        <select id="enableCorrection" class="select-input">
+                            <option value="false" selected>Não (Direta)</option>
+                            <option value="true">Sim (Pausar 75% para Revisar)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="label">🔇 Filtro Silero VAD (Ruído)</span>
+                        <select id="enableVad" class="select-input">
+                            <option value="true" selected>Ativado (Suporta Vídeos Longos)</option>
+                            <option value="false">Desativado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- OPÇÕES AVANÇADAS EXPANSÍVEIS (Estilização de Legenda) -->
+                <div style="margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="font-size: 0.88rem; font-weight: 600; color: var(--accent);">🎨 Estilização da Legenda (Para Vídeo Embutido)</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <span class="label">Posição na Tela</span>
+                            <select id="textPosition" class="select-input">
+                                <option value="bottom" selected>Inferior (Padrão)</option>
+                                <option value="middle">Centralizado</option>
+                                <option value="top">Superior</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <span class="label">Cor da Fonte</span>
+                            <input type="color" id="textColor" value="#FFFFFF" style="width: 100%; height: 38px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; background: transparent;">
+                        </div>
+
+                        <div class="form-group">
+                            <span class="label">Tamanho da Fonte (pt)</span>
+                            <input type="number" id="fontSize" value="24" min="12" max="72" class="input-text">
+                        </div>
+
+                        <div class="form-group">
+                            <span class="label">Caixa de Fundo Escura (Box)</span>
+                            <select id="showBoxBackground" class="select-input">
+                                <option value="true" selected>Sim (Facilita Leitura)</option>
+                                <option value="false">Não (Apenas Contorno)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão de Iniciar Processo -->
+                <div style="margin-top: 1.5rem;">
+                    <button type="button" id="btnSubmitProcess" class="btn-primary">🎬 Legendar & Traduzir Vídeo</button>
+                </div>
+            </div>
+
+            <!-- CARD DE PROGRESSO DA TAREFA -->
+            <div class="card" id="processCard" style="display: none; margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <span class="card-title">⏳ Processando Legendas...</span>
+                    <button type="button" class="btn-secondary btn-cancel-task" style="color: #fca5a5; background: rgba(239, 68, 68, 0.15);">🛑 Cancelar</button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem;">
+                    <span id="processStepText">Iniciando...</span>
+                    <span id="processPercentText" style="font-weight: 700; color: var(--accent);">0%</span>
+                </div>
+
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <!-- CARD DE REVISÃO E EDIÇÃO (PAUSA 75%) -->
+            <div id="correctionCard" class="card correction-card" style="display: none; margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <span class="card-title">✏️ Revisão & Edição de Legendas</span>
+                    <button type="button" id="btnContinueProcess" class="btn-primary" style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.85rem;">🚀 Salvar e Renderizar Final</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                    <!-- Coluna A: Preview do Vídeo com Legenda -->
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <span class="label">📺 Pré-visualização ao Vivo</span>
+                        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                            <video id="previewVideoEl" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
+                        </div>
+                    </div>
+
+                    <!-- Coluna B: Lista de Estrofes Transcritas/Traduzidas -->
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <span class="label">📜 Trechos (MM:SS.ms)</span>
+                        <div id="correctionList" style="display: flex; flex-direction: column; gap: 0.8rem; max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
+                            <!-- Preenchido dinamicamente por JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD DE DOWNLOAD CONCLUÍDO -->
+            <div class="card" id="downloadBox" style="display: none; text-align: center; border-color: rgba(16, 185, 129, 0.4);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
+                <h3 style="font-size: 1.2rem; color: var(--text-main); margin-bottom: 0.4rem;">Legendas Concluídas com Sucesso!</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">Seu vídeo legendado ou arquivos de legenda estão prontos para download.</p>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; max-width: 500px; margin: 0 auto;">
+                    <button type="button" id="btnDownloadVideo" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);">⬇️ Baixar Vídeo MP4 (.mp4)</button>
+                    <button type="button" onclick="downloadSubtitle('srt')" class="btn-secondary">📄 Baixar .SRT</button>
+                    <button type="button" onclick="downloadSubtitle('vtt')" class="btn-secondary">📄 Baixar .VTT</button>
+                    <button type="button" onclick="downloadSubtitle('ass')" class="btn-secondary">📄 Baixar .ASS</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- ABA 2: BIBLIOTECA & LEGENDAS -->
+        <!-- ============================================================= -->
+        <div id="libraryTabContent" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📁 Biblioteca de Mídias & Legendas</span>
+                    <button type="button" onclick="loadLibrary()" class="btn-secondary">🔄 Atualizar</button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Seção Legendas Geradas -->
+                    <div>
+                        <span class="label" style="color: var(--accent); margin-bottom: 0.6rem; display: block;">📄 Legendas Geradas (.SRT, .VTT, .ASS)</span>
+                        <div id="subtitlesList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    </div>
+
+                    <!-- Seção Vídeos Legendados Prontos -->
+                    <div>
+                        <span class="label" style="color: var(--success); margin-bottom: 0.6rem; display: block;">🎬 Histórico de Vídeos Legendados (.MP4)</span>
+                        <div id="historyList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    </div>
+
+                    <!-- Seção Vídeos Originais -->
+                    <div>
+                        <span class="label" style="color: var(--text-muted); margin-bottom: 0.6rem; display: block;">📁 Vídeos / Áudios Enviados</span>
+                        <div id="videosList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- ABA 3: AJUSTES & CONFIGURAÇÕES -->
+        <!-- ============================================================= -->
+        <div id="settingsTabContent" style="display: none;">
+            <!-- Credenciais do Telegram -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <span class="card-title">✈️ Bot do Telegram</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="label">Bot Token</span>
+                        <input type="password" id="telegramTokenInput" class="input-text" placeholder="123456:ABC-DEF...">
+                    </div>
+                    <div class="form-group">
+                        <span class="label">Chat ID</span>
+                        <input type="text" id="telegramChatIdInput" class="input-text" placeholder="123456789">
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <button type="button" onclick="saveTelegram()" class="btn-primary" style="max-width: 200px;">💾 Salvar Telegram</button>
+                </div>
+            </div>
+
+            <!-- IP Externo / Acesso Remoto -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🌐 IP / URL de Acesso Remoto</span>
+                </div>
+                <div class="form-group">
+                    <span class="label">URL Externa do Servidor</span>
+                    <input type="text" id="externalUrlInput" class="input-text" placeholder="Ex: http://192.168.1.100:8001">
+                </div>
+                <div style="margin-top: 1rem;">
+                    <button type="button" onclick="saveExternalUrl()" class="btn-primary" style="max-width: 200px;">💾 Salvar URL Externa</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RODAPÉ -->
+        <footer>
+            Sal0 Legendas v1.0.0 Stable — Sistema de Legendagem e Tradução Automática
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT PRINCIPAL DA INTERFACE -->
+    <script>
+        let currentSegments = [];
+        let pollingInterval = null;
+
+        // Alternar abas
+        function switchTab(tab) {
+            document.getElementById('mainTabContent').style.display = tab === 'main' ? 'block' : 'none';
+            document.getElementById('libraryTabContent').style.display = tab === 'library' ? 'block' : 'none';
+            document.getElementById('settingsTabContent').style.display = tab === 'settings' ? 'block' : 'none';
+
+            document.getElementById('tabMainBtn').classList.toggle('active', tab === 'main');
+            document.getElementById('tabLibraryBtn').classList.toggle('active', tab === 'library');
+            document.getElementById('tabSettingsBtn').classList.toggle('active', tab === 'settings');
+
+            if (tab === 'library') loadLibrary();
+        }
+
+        function toggleSourceType(type) {
+            document.getElementById('sourceFileDiv').style.display = type === 'file' ? 'flex' : 'none';
+            document.getElementById('sourceYoutubeDiv').style.display = type === 'youtube' ? 'flex' : 'none';
+            document.getElementById('sourceLibraryDiv').style.display = type === 'library' ? 'flex' : 'none';
+        }
+
+        // Requisições com Autenticação
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('auth_token') || '';
+            options.headers = options.headers || {};
+            if (token) {
+                options.headers['x-session-token'] = token;
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return fetch(url, options);
+        }
+
+        // Submeter Processamento
+        document.getElementById('btnSubmitProcess').onclick = async () => {
+            const sourceType = document.querySelector('input[name="source_type"]:checked').value;
+            const formData = new FormData();
+
+            if (sourceType === 'file') {
+                const fileInput = document.getElementById('videoFileInput');
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    alert("Selecione um arquivo de vídeo ou áudio.");
+                    return;
+                }
+                formData.append('video_file', fileInput.files[0]);
+            } else if (sourceType === 'youtube') {
+                const ytUrl = document.getElementById('youtubeUrlInput').value.trim();
+                if (!ytUrl) {
+                    alert("Informe a URL do YouTube.");
+                    return;
+                }
+                formData.append('youtube_url', ytUrl);
+            } else if (sourceType === 'library') {
+                const libSelect = document.getElementById('libraryVideoSelect').value;
+                if (!libSelect) {
+                    alert("Selecione um vídeo da biblioteca.");
+                    return;
+                }
+                formData.append('library_video', libSelect);
+            }
+
+            formData.append('target_language', document.getElementById('targetLanguage').value);
+            formData.append('source_language', document.getElementById('sourceLanguage').value);
+            formData.append('whisper_model', document.getElementById('whisperModel').value);
+            formData.append('export_subtitles_only', document.getElementById('exportFormat').value === 'subtitles_only');
+            formData.append('enable_correction', document.getElementById('enableCorrection').value);
+            formData.append('enable_vad', document.getElementById('enableVad').value);
+            formData.append('text_position', document.getElementById('textPosition').value);
+            formData.append('text_color', document.getElementById('textColor').value);
+            formData.append('font_size', document.getElementById('fontSize').value);
+            formData.append('show_box_background', document.getElementById('showBoxBackground').value);
+
+            document.getElementById('btnSubmitProcess').disabled = true;
+            document.getElementById('processCard').style.display = 'block';
+            document.getElementById('downloadBox').style.display = 'none';
+
+            try {
+                const res = await authFetch('/api/process', { method: 'POST', body: formData });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || "Erro ao iniciar processamento.");
+                }
+                startPolling();
+            } catch (e) {
+                alert("Erro: " + e.message);
+                document.getElementById('btnSubmitProcess').disabled = false;
+                document.getElementById('processCard').style.display = 'none';
+            }
+        };
+
+        // Polling de Status
+        function startPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(async () => {
+                try {
+                    const res = await authFetch('/api/status');
+                    if (!res.ok) return;
+                    const data = await res.json();
+
+                    document.getElementById('processStepText').innerText = data.step || "Processando...";
+                    document.getElementById('processPercentText').innerText = (data.progress || 0) + "%";
+                    document.getElementById('progressBarFill').style.width = (data.progress || 0) + "%";
+
+                    if (data.status === "waiting_for_user_correction") {
+                        clearInterval(pollingInterval);
+                        loadCorrectionPanel();
+                    } else if (data.status === "done") {
+                        clearInterval(pollingInterval);
+                        document.getElementById('processCard').style.display = 'none';
+                        document.getElementById('downloadBox').style.display = 'block';
+                        document.getElementById('btnSubmitProcess').disabled = false;
+                    } else if (data.status === "error") {
+                        clearInterval(pollingInterval);
+                        document.getElementById('processCard').style.display = 'none';
+                        document.getElementById('btnSubmitProcess').disabled = false;
+                        alert("Erro no processamento: " + (data.error_message || "Desconhecido"));
+                    }
+                } catch (e) { console.error("Erro no status:", e); }
+            }, 1500);
+        }
+
+        // Formatação de Tempos (MM:SS.ms)
+        function formatTimeMMSS(sec) {
+            if (isNaN(sec) || sec < 0) sec = 0;
+            const mins = Math.floor(sec / 60);
+            const remainder = (sec % 60).toFixed(2);
+            const paddedMins = String(mins).padStart(2, '0');
+            const paddedSecs = parseFloat(remainder) < 10 ? '0' + remainder : remainder;
+            return `${paddedMins}:${paddedSecs}`;
+        }
+
+        function parseTimeMMSS(str) {
+            if (!str) return 0;
+            str = String(str).trim();
+            if (str.includes(':')) {
+                const parts = str.split(':');
+                return (parseFloat(parts[0]) || 0) * 60 + (parseFloat(parts[1]) || 0);
+            }
+            return parseFloat(str) || 0;
+        }
+
+        // Carregar Painel de Revisão
+        async function loadCorrectionPanel() {
+            try {
+                const res = await authFetch('/api/segments_to_edit');
+                if (!res.ok) return;
+                currentSegments = await res.json();
+                renderSegments();
+
+                const videoEl = document.getElementById('previewVideoEl');
+                videoEl.src = '/api/cache/video';
+
+                document.getElementById('correctionCard').style.display = 'block';
+            } catch (e) { console.error("Erro ao carregar revisão:", e); }
+        }
+
+        function renderSegments() {
+            const container = document.getElementById('correctionList');
+            container.innerHTML = "";
+
+            currentSegments.forEach((seg, idx) => {
+                const card = document.createElement('div');
+                card.style.background = "var(--input-bg)";
+                card.style.padding = "0.75rem";
+                card.style.borderRadius = "8px";
+                card.style.display = "flex";
+                card.style.flexDirection = "column";
+                card.style.gap = "0.4rem";
+
+                const timeRow = document.createElement('div');
+                timeRow.style.display = "flex";
+                timeRow.style.alignItems = "center";
+                timeRow.style.gap = "0.4rem";
+                timeRow.style.fontSize = "0.75rem";
+
+                timeRow.innerHTML = `
+                    <span>⏱️ Início:</span>
+                    <input type="text" class="input-text" style="width:75px; padding:0.2rem; text-align:center;" value="${formatTimeMMSS(seg.start)}" onchange="seg.start=parseTimeMMSS(this.value)">
+                    <span>Fim:</span>
+                    <input type="text" class="input-text" style="width:75px; padding:0.2rem; text-align:center;" value="${formatTimeMMSS(seg.end)}" onchange="seg.end=parseTimeMMSS(this.value)">
+                `;
+
+                const textInput = document.createElement('input');
+                textInput.type = "text";
+                textInput.className = "input-text";
+                textInput.value = seg.translated_text || seg.text || "";
+                textInput.oninput = (e) => {
+                    seg.translated_text = e.target.value;
+                    seg.text = e.target.value;
+                };
+
+                card.appendChild(timeRow);
+                card.appendChild(textInput);
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('btnContinueProcess').onclick = async () => {
+            await authFetch('/api/continue_process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentSegments)
+            });
+            document.getElementById('correctionCard').style.display = 'none';
+            document.getElementById('processCard').style.display = 'block';
+            startPolling();
+        };
+
+        // Downloads
+        document.getElementById('btnDownloadVideo').onclick = () => window.location.href = '/api/download';
+        function downloadSubtitle(fmt) {
+            const filename = (document.getElementById('processStepText').innerText || "legenda").replace(/[^a-zA-Z0-9_-]/g, "_") + "." + fmt;
+            window.location.href = `/api/subtitles/download/${fmt}/${filename}`;
+        }
+
+        // Carregar Biblioteca
+        async function loadLibrary() {
+            try {
+                const res = await authFetch('/api/library');
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const renderSection = (items, containerId, section) => {
+                    const el = document.getElementById(containerId);
+                    el.innerHTML = items.length ? "" : "<p style='font-size:0.8rem; color:var(--text-muted);'>Nenhum arquivo.</p>";
+                    items.forEach(item => {
+                        const div = document.createElement('div');
+                        div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
+                        div.style.padding = '0.5rem 0.8rem'; div.style.background = 'var(--input-bg)'; div.style.borderRadius = '6px';
+                        div.innerHTML = `
+                            <span style="font-size:0.85rem; font-weight:500;">${item.filename} (${item.size_mb} MB)</span>
+                            <button class="btn-secondary" onclick="deleteLibraryItem('${section}', '${item.filename}')">🗑️</button>
+                        `;
+                        el.appendChild(div);
+                    });
+                };
+
+                renderSection(data.subtitles, 'subtitlesList', 'subtitles');
+                renderSection(data.history, 'historyList', 'history');
+                renderSection(data.videos, 'videosList', 'videos');
+
+                // Atualizar select de vídeos
+                const select = document.getElementById('libraryVideoSelect');
+                select.innerHTML = "<option value=''>Selecione um vídeo...</option>";
+                data.videos.forEach(v => {
+                    select.innerHTML += `<option value="${v.filename}">${v.filename}</option>`;
+                });
+            } catch (e) { console.error("Erro biblioteca:", e); }
+        }
+
+        async function deleteLibraryItem(section, filename) {
+            if (!confirm(`Excluir ${filename}?`)) return;
+            await authFetch(`/api/library/${section}/${filename}`, { method: 'DELETE' });
+            loadLibrary();
+        }
+
+        window.onload = () => { loadLibrary(); };
+    </script>
+</body>
+</html>

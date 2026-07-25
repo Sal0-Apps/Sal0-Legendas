@@ -1,0 +1,31 @@
+name: sal0-legendas
+
+services:
+  sal0-legendas:
+    image: ghcr.io/sal0-apps/sal0-legendas:latest
+    container_name: sal0-legendas
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - /DATA/AppData/sal0-legendas/data:/data
+    environment:
+      - TZ=America/Sao_Paulo
+      - PYTHONUNBUFFERED=1
+    x-casaos:
+      architectures:
+        - amd64
+        - arm64
+      main: sal0-legendas
+      title:
+        custom: Sal0 Legendas
+      description:
+        custom: Legendador e Tradutor Automático de Vídeos de Qualquer Duração (Whisper AI + Silero VAD + pt-BR)
+      tagline:
+        custom: Legendador e Tradutor Automático de Vídeos
+      icon: https://raw.githubusercontent.com/Sal0-Apps/Sal0-Legendas/main/app/templates/favicon.png
+      thumbnail: https://raw.githubusercontent.com/Sal0-Apps/Sal0-Legendas/main/app/templates/favicon.png
+      category: Media
+      port_map: "8001"
+      scheme: http
+      index: /

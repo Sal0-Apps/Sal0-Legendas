@@ -23,7 +23,7 @@ from translator import translate_segments, SUPPORTED_LANGUAGES
 from subtitle_formatter import generate_srt, generate_vtt, generate_ass, generate_txt
 from video_renderer import render_subtitled_video
 
-APP_VERSION = "v1.0.6"
+APP_VERSION = "v1.0.10"
 
 # Configuração de Logger
 logger = logging.getLogger("legendas")
@@ -324,7 +324,8 @@ def read_root():
         return HTMLResponse(content=f.read())
 
 @app.get("/api/status")
-def get_status(current_user: dict = Depends(get_current_user)):
+def get_status():
+    """Status é público para que qualquer navegador possa ver o progresso."""
     with state_lock:
         return dict(state)
 

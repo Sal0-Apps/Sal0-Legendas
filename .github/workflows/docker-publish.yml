@@ -1,9 +1,10 @@
-name: Publish Docker Image
+name: Build, Publish and Release
 
 on:
   push:
+    branches:
+      - main
     tags:
-      - 'v*.*.*'
       - 'v*'
   workflow_dispatch:
 
@@ -38,10 +39,8 @@ jobs:
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             VERSION_TAG=$(echo "${{ github.ref_name }}" | sed 's/^v//')
             echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
-            echo "IS_TAG=true" >> $GITHUB_ENV
           else
             echo "VERSION_TAG=latest" >> $GITHUB_ENV
-            echo "IS_TAG=false" >> $GITHUB_ENV
           fi
 
       - name: Build and push Docker image
@@ -52,5 +51,4 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_TAG }}:latest
-            ${{ env.IMAGE_TAG }}:v1.0.1
-            ${{ env.IS_TAG == 'true' && format('{0}:{1}', env.IMAGE_TAG, env.VERSION_TAG) || '' }}
+            ${{ env.IMAGE_TAG }}:${{ env.VERSION_TAG }}

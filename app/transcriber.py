@@ -100,6 +100,7 @@ def transcribe_audio(
         f"Threads={cpu_threads}, Compute={compute_type}, BeamSize={beam_size}, SileroVAD={enable_vad}"
     )
 
+    repo_id = resolve_whisper_repo(model_size)
     whisper_download_dir = "/data/output/models/whisper"
     os.makedirs(whisper_download_dir, exist_ok=True)
 

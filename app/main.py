@@ -23,7 +23,7 @@ from translator import translate_segments, SUPPORTED_LANGUAGES
 from subtitle_formatter import generate_srt, generate_vtt, generate_ass, generate_txt
 from video_renderer import render_subtitled_video
 
-APP_VERSION = "v1.0.0"
+APP_VERSION = "v1.0.6"
 
 # Configuração de Logger
 logger = logging.getLogger("legendas")
@@ -47,10 +47,21 @@ def log_diagnostic(message: str, level: str = "INFO"):
     except Exception as e:
         logger.error(f"Erro ao salvar log de diagnóstico: {e}")
 
-app = FastAPI(title="Sal0 Legendas", version=APP_VERSION)
-
-# Templates HTML
+# Templates HTML e Arquivos Estáticos
 templates = Jinja2Templates(directory="templates")
+app.mount("/templates", StaticFiles(directory="templates"), name="templates")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    if os.path.exists("templates/favicon.png"):
+        return FileResponse("templates/favicon.png")
+    return HTMLResponse("", status_code=204)
+
+@app.get("/logo.png", include_in_schema=False)
+async def logo():
+    if os.path.exists("templates/logo.png"):
+        return FileResponse("templates/logo.png")
+    return HTMLResponse("", status_code=204)
 
 # Lock de concorrência global
 processing_lock = threading.Lock()

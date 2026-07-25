@@ -47,6 +47,8 @@ def log_diagnostic(message: str, level: str = "INFO"):
     except Exception as e:
         logger.error(f"Erro ao salvar log de diagnóstico: {e}")
 
+app = FastAPI(title="Sal0 Legendas", version=APP_VERSION)
+
 # Templates HTML e Arquivos Estáticos
 templates = Jinja2Templates(directory="templates")
 app.mount("/templates", StaticFiles(directory="templates"), name="templates")

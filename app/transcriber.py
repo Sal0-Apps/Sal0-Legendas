@@ -81,7 +81,8 @@ def transcribe_audio(
     initial_prompt: str = None,
     quality_mode: str = "standard",
     cpu_threads: int = None,
-    enable_vad: bool = True
+    enable_vad: bool = True,
+    progress_callback = None
 ) -> tuple[list[dict], str]:
     """
     Transcreve áudios de QUALQUER DURAÇÃO (sem limite de tempo) com Faster-Whisper e Silero VAD.
@@ -205,6 +206,11 @@ def transcribe_audio(
             "translated_text": clean_text,
             "words": words_info
         })
+
+        if progress_callback and hasattr(info, "duration") and info.duration and info.duration > 0:
+            pct = min(60, int(45 + (seg.end / info.duration) * 15))
+            time_pct = int((seg.end / info.duration) * 100)
+            progress_callback(pct, f"Transcrevendo IA com {model_size} ({time_pct}%)")
 
     # Liberar memória do modelo
     del model

@@ -1,5 +1,4 @@
-import socket
-socket.setdefaulttimeout(120)  # Timeout de 120s para impedir travamentos de socket
+# Sal0 Legendas Backend
 import os
 import uuid
 import shutil
@@ -10,6 +9,7 @@ import requests
 import json
 import hashlib
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks, Header, Depends, Query
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -23,7 +23,7 @@ from translator import translate_segments, SUPPORTED_LANGUAGES
 from subtitle_formatter import generate_srt, generate_vtt, generate_ass, generate_txt
 from video_renderer import render_subtitled_video
 
-APP_VERSION = "v1.0.12"
+APP_VERSION = "v1.0.13"
 
 # Configuração de Logger
 logger = logging.getLogger("legendas")
@@ -48,6 +48,14 @@ def log_diagnostic(message: str, level: str = "INFO"):
         logger.error(f"Erro ao salvar log de diagnóstico: {e}")
 
 app = FastAPI(title="Sal0 Legendas", version=APP_VERSION)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Templates HTML e Arquivos Estáticos
 templates = Jinja2Templates(directory="templates")

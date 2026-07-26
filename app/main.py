@@ -23,7 +23,7 @@ from translator import translate_segments, SUPPORTED_LANGUAGES
 from subtitle_formatter import generate_srt, generate_vtt, generate_ass, generate_txt
 from video_renderer import render_subtitled_video
 
-APP_VERSION = "v1.0.10"
+APP_VERSION = "v1.0.11"
 
 # Configuração de Logger
 logger = logging.getLogger("legendas")
@@ -171,22 +171,16 @@ def get_current_user(
         else:
             auth_token = authorization
 
-    users = load_users()
-    if not users:
-        return {"username": "admin", "role": "admin"}
+    if auth_token:
+        sessions = load_sessions()
+        if auth_token in sessions:
+            username = sessions[auth_token].get("username")
+            users = load_users()
+            if username in users:
+                return {"username": username, "role": users[username].get("role", "user")}
 
-    if not auth_token:
-        raise HTTPException(status_code=401, detail="Token de sessão não fornecido.")
-
-    sessions = load_sessions()
-    if auth_token not in sessions:
-        raise HTTPException(status_code=401, detail="Sessão inválida ou expirada.")
-
-    username = sessions[auth_token].get("username")
-    if username not in users:
-        raise HTTPException(status_code=401, detail="Usuário não encontrado.")
-
-    return {"username": username, "role": users[username].get("role", "user")}
+    # Modo autônomo do Sal0 Legendas: retorna admin caso não haja sessão/token
+    return {"username": "admin", "role": "admin"}
 
 # =====================================================================
 # REGISTRO DE CONFIGURAÇÕES (Telegram, URL Externa, Perfis)
@@ -378,10 +372,12 @@ def delete_lyrics_server(current_user: dict = Depends(get_current_user)):
     return {"status": "success"}
 
 @app.get("/api/telegram")
+@app.get("/api/settings/telegram")
 def get_telegram_config(current_user: dict = Depends(get_current_user)):
     return load_telegram_config()
 
 @app.post("/api/telegram")
+@app.post("/api/settings/telegram")
 def save_telegram_config(config: TelegramModel, current_user: dict = Depends(get_current_user)):
     os.makedirs(os.path.dirname(TELEGRAM_CONFIG_FILE), exist_ok=True)
     with open(TELEGRAM_CONFIG_FILE, "w", encoding="utf-8") as f:
@@ -389,10 +385,12 @@ def save_telegram_config(config: TelegramModel, current_user: dict = Depends(get
     return {"status": "success"}
 
 @app.get("/api/external_url")
+@app.get("/api/settings/external_url")
 def get_external_url_config(current_user: dict = Depends(get_current_user)):
     return load_external_url_config()
 
 @app.post("/api/external_url")
+@app.post("/api/settings/external_url")
 def save_external_url_config(config: ExternalUrlModel, current_user: dict = Depends(get_current_user)):
     os.makedirs(os.path.dirname(EXTERNAL_URL_FILE), exist_ok=True)
     with open(EXTERNAL_URL_FILE, "w", encoding="utf-8") as f:

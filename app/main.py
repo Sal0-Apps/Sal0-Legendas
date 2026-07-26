@@ -23,7 +23,7 @@ from translator import translate_segments, SUPPORTED_LANGUAGES
 from subtitle_formatter import generate_srt, generate_vtt, generate_ass, generate_txt
 from video_renderer import render_subtitled_video
 
-APP_VERSION = "v1.0.11"
+APP_VERSION = "v1.0.12"
 
 # Configuração de Logger
 logger = logging.getLogger("legendas")
@@ -519,11 +519,15 @@ def run_pipeline(
         update_state("processing", f"Transcribing Speech ({whisper_model})", 45)
         send_telegram_notification(telegram_token, telegram_chat_id, f"✍️ <b>Sal0 Legendas</b>: Transcrevendo voz com IA ({whisper_model}) (45%)")
         
+        def whisper_progress_cb(pct, msg):
+            update_state("processing", msg, pct)
+
         segments, detected_lang = transcribe_audio(
             converted_wav,
             model_size=whisper_model,
             initial_prompt=lyrics_text,
-            enable_vad=enable_vad
+            enable_vad=enable_vad,
+            progress_callback=whisper_progress_cb
         )
 
         update_state("processing", "Translating Subtitles", 60, detected_language=detected_lang)

@@ -1165,7 +1165,11 @@
             document.getElementById('btnSubmitProcess').disabled = true;
             document.getElementById('processCard').style.display = 'block';
             document.getElementById('downloadBox').style.display = 'none';
+            document.getElementById('processStepText').innerText = "Enviando mídia para o servidor...";
+            document.getElementById('processPercentText').innerText = "5%";
+            document.getElementById('progressBarFill').style.width = "5%";
             resetTimeline();
+            startPolling();
 
             try {
                 const res = await authFetch('/api/process', { method: 'POST', body: formData });
@@ -1173,8 +1177,8 @@
                     const err = await res.json();
                     throw new Error(err.detail || "Erro ao iniciar processamento.");
                 }
-                startPolling();
             } catch (e) {
+                if (pollingInterval) clearInterval(pollingInterval);
                 alert("Erro: " + e.message);
                 document.getElementById('btnSubmitProcess').disabled = false;
                 document.getElementById('processCard').style.display = 'none';
